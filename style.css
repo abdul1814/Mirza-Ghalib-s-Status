@@ -1,0 +1,101 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: sans-serif;
+}
+
+body {
+  background: url("assets/images/main_bg.jpg") no-repeat center center fixed;
+  background-size: cover;
+  padding-top: 120px;
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background: #0056b3;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 20px;
+  font-weight: bold;
+  z-index: 1000;
+}
+
+.search-container {
+  position: fixed;
+  top: 60px;
+  width: 100%;
+  background: #0056b3;
+  padding: 10px 20px;
+  z-index: 999;
+}
+
+#searchInput {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  outline: none;
+}
+
+#statusContainer {
+  padding: 20px;
+  max-width: 600px;
+  margin: auto;
+}
+
+.card {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  color: white;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+}
+
+.card-content {
+  position: relative;
+  padding: 20px;
+  z-index: 2;
+}
+
+.card-text {
+  font-size: 18px;
+  margin-bottom: 20px;
+}
+
+.highlight {
+  background: yellow;
+  color: black;
+}
+
+.card-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.card-buttons button {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#loading {
+  text-align: center;
+  padding: 20px;
+  color: white;
+  display: none;
+}
