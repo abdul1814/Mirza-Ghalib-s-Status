@@ -9,11 +9,13 @@ let images = [];
 let batchSize = 6;
 let currentIndex = 0;
 let loading = false;
+let sharedStatus = null; // NEW
 
 /* INIT */
 async function init() {
   await loadAllStatus();
   await loadImages();
+  handleSharedLink();   // NEW
   renderBatch();
 }
 
@@ -35,6 +37,20 @@ async function loadAllStatus() {
 async function loadImages() {
   const res = await fetch("assets/images/images.json");
   images = await res.json();
+}
+
+/* 🔗 Shared Link Fix */
+function handleSharedLink() {
+  const params = new URLSearchParams(window.location.search);
+  const id = parseInt(params.get("id"));
+
+  if (!id) return;
+
+  const index = allStatus.findIndex(s => s.id === id);
+  if (index !== -1) {
+    sharedStatus = allStatus[index];
+    allStatus.splice(index, 1); // remove from original
+  }
 }
 
 /* Scroll detection */
@@ -66,6 +82,14 @@ function renderBatch() {
 
 /* Get Next Status */
 function getNextStatus() {
+
+  // FIRST TIME → show shared status at top
+  if (sharedStatus) {
+    const temp = sharedStatus;
+    sharedStatus = null;
+    return temp;
+  }
+
   if (rankedStatus.length > 0 && currentIndex < rankedStatus.length) {
     return rankedStatus[currentIndex++];
   }
