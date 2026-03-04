@@ -1,22 +1,20 @@
 const container = document.getElementById("statusContainer");
 const searchInput = document.getElementById("searchInput");
+const loadingDiv = document.getElementById("loading");
 
 let allStatus = [];
 let rankedStatus = [];
 let images = [];
 
-const CARD_HEIGHT = 260;
-const BUFFER = 5;
-
-let scrollIndex = 0;
+let batchSize = 6;
+let currentIndex = 0;
+let loading = false;
 
 /* INIT */
 async function init() {
   await loadAllStatus();
   await loadImages();
-  rankedStatus = [];
-  createSpacer(100000); // virtually infinite height
-  renderVisible();
+  renderBatch();
 }
 
 async function loadAllStatus() {
@@ -39,54 +37,56 @@ async function loadImages() {
   images = await res.json();
 }
 
-/* Virtual Infinite Height */
-function createSpacer(size) {
-  container.innerHTML = "";
-  const spacer = document.createElement("div");
-  spacer.className = "spacer";
-  spacer.style.height = size + "px";
-  container.appendChild(spacer);
+/* Scroll detection */
+window.addEventListener("scroll", () => {
+  if (loading) return;
+
+  if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100) {
+    renderBatch();
+  }
+});
+
+/* Render Batch */
+function renderBatch() {
+  loading = true;
+  loadingDiv.style.display = "block";
+
+  setTimeout(() => {
+    for (let i = 0; i < batchSize; i++) {
+      const status = getNextStatus();
+      const card = createCard(status);
+      container.appendChild(card);
+    }
+
+    limitDOM();
+    loadingDiv.style.display = "none";
+    loading = false;
+  }, 500);
 }
 
-/* Get Status by Index (endless) */
-function getStatusByIndex(i) {
-  if (rankedStatus.length && i < rankedStatus.length) {
-    return rankedStatus[i];
+/* Get Next Status */
+function getNextStatus() {
+  if (rankedStatus.length > 0 && currentIndex < rankedStatus.length) {
+    return rankedStatus[currentIndex++];
   }
 
-  const randomIndex = Math.floor(Math.random() * allStatus.length);
-  return allStatus[randomIndex];
-}
-
-/* Render */
-function renderVisible() {
-  const scrollTop = window.scrollY - 120;
-  const viewportHeight = window.innerHeight;
-
-  const start = Math.max(0, Math.floor(scrollTop / CARD_HEIGHT) - BUFFER);
-  const end = Math.floor((scrollTop + viewportHeight) / CARD_HEIGHT) + BUFFER;
-
-  document.querySelectorAll(".card").forEach(el => el.remove());
-
-  for (let i = start; i <= end; i++) {
-    const status = getStatusByIndex(i);
-    const card = createCard(status, i);
-    card.style.top = i * CARD_HEIGHT + "px";
-    container.appendChild(card);
+  if (currentIndex >= allStatus.length) {
+    currentIndex = 0;
+    shuffle(allStatus);
   }
-}
 
-window.addEventListener("scroll", renderVisible);
+  return allStatus[currentIndex++];
+}
 
 /* Create Card */
-function createCard(status, index) {
+function createCard(status) {
   const card = document.createElement("div");
   card.className = "card";
 
   const bg = document.createElement("div");
   bg.className = "card-bg";
   bg.style.backgroundImage =
-    `url(assets/images/${images[index % images.length]})`;
+    `url(assets/images/${images[Math.floor(Math.random()*images.length)]})`;
 
   const content = document.createElement("div");
   content.className = "card-content";
@@ -118,9 +118,12 @@ function createCard(status, index) {
   return card;
 }
 
-/* Search Ranking */
+/* Search */
 searchInput.addEventListener("input", debounce(e => {
   const term = e.target.value.trim().toLowerCase();
+
+  currentIndex = 0;
+  container.innerHTML = "";
 
   if (!term) {
     rankedStatus = [];
@@ -134,8 +137,7 @@ searchInput.addEventListener("input", debounce(e => {
       .sort((a,b) => b.score - a.score);
   }
 
-  window.scrollTo(0,0);
-  renderVisible();
+  renderBatch();
 }, 350));
 
 function highlightText(text) {
@@ -146,12 +148,26 @@ function highlightText(text) {
 }
 
 /* Utils */
+function limitDOM() {
+  const maxCards = 30;
+  while (container.children.length > maxCards) {
+    container.removeChild(container.firstChild);
+  }
+}
+
 function debounce(fn, delay) {
   let timer;
   return (...args) => {
     clearTimeout(timer);
     timer = setTimeout(() => fn(...args), delay);
   };
+}
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
 }
 
 function copyText(text, btn) {
