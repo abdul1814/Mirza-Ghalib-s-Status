@@ -1,3 +1,4 @@
+/* ===== Global Reset ===== */
 * {
   margin: 0;
   padding: 0;
@@ -6,93 +7,87 @@
 }
 
 body {
-  background: url("assets/images/main_bg.jpg") no-repeat center center fixed;
-  background-size: cover;
-  padding-top: 120px;
-}
-
-/* Header */
-.header {
-  position: fixed;
-  top: 0;
-  width: 100%;
-  background: linear-gradient(90deg,#0047ab,#007bff);
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  min-height: 100vh;
   color: white;
-  display: flex;
-  justify-content: space-between;
-  padding: 15px 20px;
-  font-weight: bold;
-  z-index: 1000;
+  overflow-x: hidden;
 }
 
-/* Search */
-.search-container {
-  position: fixed;
-  top: 60px;
-  width: 100%;
-  padding: 10px 20px;
-  z-index: 999;
+/* ===== Search Bar ===== */
+.search-wrapper {
+  position: sticky;
+  top: 0;
+  padding: 15px;
+  backdrop-filter: blur(10px);
+  background: rgba(0,0,0,0.2);
+  z-index: 100;
 }
 
 #searchInput {
   width: 100%;
-  padding: 12px;
-  border-radius: 25px;
+  padding: 12px 18px;
+  border-radius: 30px;
   border: none;
   outline: none;
-  font-size: 14px;
-  background: #007bff;
+  font-size: 15px;
+  background: #5eb3ff;   /* Light Blue */
   color: white;
+  transition: 0.3s;
 }
 
 #searchInput::placeholder {
-  color: rgba(255,255,255,0.8);
+  color: rgba(255,255,255,0.9);
 }
 
-/* Container */
+#searchInput:focus {
+  transform: scale(1.02);
+}
+
+/* ===== Container ===== */
 #statusContainer {
-  max-width: 600px;
-  margin: auto;
-  padding: 0 15px;
+  padding: 15px;
 }
 
-/* Glass Card */
+/* ===== Card Design ===== */
 .card {
   position: relative;
-  height: 240px;
+  margin: 15px 10px; /* left-right spacing fixed */
   border-radius: 20px;
   overflow: hidden;
-  color: white;
-  margin-bottom: 20px;
   backdrop-filter: blur(15px);
-  background: rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.08);
   box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+  transition: transform 0.3s ease;
 }
 
+.card:hover {
+  transform: translateY(-5px);
+}
+
+/* Background Image */
 .card-bg {
   position: absolute;
   inset: 0;
   background-size: cover;
   background-position: center;
-  filter: brightness(0.7);
+  filter: blur(15px) brightness(0.6);
+  z-index: 0;
 }
 
+/* Content */
 .card-content {
   position: relative;
-  height: 100%;
-  padding: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  z-index: 2;
+  z-index: 1;
+  padding: 30px 20px;
+  text-align: center;   /* Centered Text */
 }
 
 .card-text {
   font-size: 18px;
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
+/* Highlight */
 .highlight {
   background: yellow;
   color: black;
@@ -100,34 +95,55 @@ body {
   border-radius: 4px;
 }
 
-/* Buttons */
+/* ===== Buttons Section ===== */
 .card-buttons {
-  position: absolute;
-  bottom: 10px;
-  left: 10px;
+  position: relative;
+  z-index: 1;
   display: flex;
-  gap: 8px;
-  z-index: 3;
+  justify-content: flex-start; /* left aligned */
+  gap: 10px;
+  padding: 0 15px 15px 15px;  /* bottom spacing */
 }
 
 .card-buttons button {
-  padding: 6px 10px;
+  flex: 1;
+  padding: 10px;
   border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 12px;
-  background: #007bff;
+  border-radius: 12px;
+  background: #007bff;  /* Blue background */
   color: white;
-  display: flex;
-  align-items: center;
-  gap: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.3s;
 }
 
-/* Loading */
+.card-buttons button:hover {
+  background: #0056d2;
+  transform: translateY(-2px);
+}
+
+/* ===== Loading Text ===== */
 #loading {
   text-align: center;
   padding: 20px;
-  color: white;
-  font-weight: bold;
+  font-size: 16px;
   display: none;
+  opacity: 0.8;
+}
+
+/* ===== Smooth Scroll Feel ===== */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 480px) {
+  .card-text {
+    font-size: 16px;
+  }
+
+  .card-buttons button {
+    font-size: 12px;
+    padding: 8px;
+  }
 }
