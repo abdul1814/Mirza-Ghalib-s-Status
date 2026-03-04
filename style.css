@@ -51,26 +51,19 @@ body {
 
 /* Container */
 #statusContainer {
-  position: relative;
   max-width: 600px;
   margin: auto;
-  padding: 0 15px; /* left right space */
-}
-
-/* Spacer */
-.spacer {
-  width: 100%;
+  padding: 0 15px;
 }
 
 /* Glass Card */
 .card {
-  position: absolute;
-  width: calc(100% - 30px);
-  left: 15px;
+  position: relative;
   height: 240px;
   border-radius: 20px;
   overflow: hidden;
   color: white;
+  margin-bottom: 20px;
   backdrop-filter: blur(15px);
   background: rgba(255,255,255,0.1);
   box-shadow: 0 8px 25px rgba(0,0,0,0.4);
@@ -128,4 +121,13 @@ body {
   display: flex;
   align-items: center;
   gap: 5px;
+}
+
+/* Loading */
+#loading {
+  text-align: center;
+  padding: 20px;
+  color: white;
+  font-weight: bold;
+  display: none;
 }
