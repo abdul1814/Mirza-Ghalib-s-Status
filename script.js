@@ -1,71 +1,82 @@
 const container = document.getElementById("statusContainer");
-const loading = document.getElementById("loading");
 const searchInput = document.getElementById("searchInput");
 
 let allStatus = [];
 let filteredStatus = [];
 let images = [];
-let batchSize = 6;
-let currentIndex = 0;
-let searchTerm = "";
-let loadingData = false;
 
-/* Fetch Data */
+const CARD_HEIGHT = 260;
+const BUFFER = 5;
+
+let visibleStart = 0;
+let visibleEnd = 0;
+
+/* INIT */
 async function init() {
-  const statusRes = await fetch("data/status.json");
-  const imageRes = await fetch("assets/images/images.json");
-
-  allStatus = await statusRes.json();
-  images = await imageRes.json();
+  await loadAllStatus();
+  await loadImages();
   filteredStatus = [...allStatus];
-
-  handleSharedLink();
-  renderBatch();
+  createSpacer();
+  renderVisible();
 }
 
-function handleSharedLink() {
-  const params = new URLSearchParams(window.location.search);
-  const id = parseInt(params.get("id"));
-  if (id) {
-    const index = allStatus.findIndex(s => s.id === id);
-    if (index !== -1) {
-      const item = allStatus.splice(index, 1)[0];
-      allStatus.unshift(item);
-      filteredStatus = [...allStatus];
-    }
+async function loadAllStatus() {
+  const pagesRes = await fetch("data/pages.json");
+  const pages = await pagesRes.json();
+
+  let combined = [];
+
+  for (const page of pages) {
+    const res = await fetch(`data/${page}`);
+    const data = await res.json();
+    combined = combined.concat(data);
+  }
+
+  allStatus = combined;
+}
+
+async function loadImages() {
+  const res = await fetch("assets/images/images.json");
+  images = await res.json();
+}
+
+/* Spacer for full height */
+function createSpacer() {
+  container.innerHTML = "";
+  const spacer = document.createElement("div");
+  spacer.className = "spacer";
+  spacer.style.height = filteredStatus.length * CARD_HEIGHT + "px";
+  container.appendChild(spacer);
+}
+
+/* Virtual Render */
+function renderVisible() {
+  const scrollTop = window.scrollY - 120;
+  const viewportHeight = window.innerHeight;
+
+  visibleStart = Math.max(0, Math.floor(scrollTop / CARD_HEIGHT) - BUFFER);
+  visibleEnd = Math.min(
+    filteredStatus.length,
+    Math.ceil((scrollTop + viewportHeight) / CARD_HEIGHT) + BUFFER
+  );
+
+  document.querySelectorAll(".card").forEach(el => el.remove());
+
+  for (let i = visibleStart; i < visibleEnd; i++) {
+    const card = createCard(filteredStatus[i], i);
+    card.style.top = i * CARD_HEIGHT + "px";
+    container.appendChild(card);
   }
 }
 
-function renderBatch() {
-  if (loadingData) return;
-  loadingData = true;
-  loading.style.display = "block";
-
-  setTimeout(() => {
-    for (let i = 0; i < batchSize; i++) {
-      if (currentIndex >= filteredStatus.length) {
-        currentIndex = 0;
-        shuffleArray(filteredStatus);
-      }
-
-      const status = filteredStatus[currentIndex];
-      container.appendChild(createCard(status, currentIndex));
-      currentIndex++;
-    }
-
-    optimizeDOM();
-    loading.style.display = "none";
-    loadingData = false;
-  }, 300);
-}
-
+/* Create Card */
 function createCard(status, index) {
   const card = document.createElement("div");
   card.className = "card";
-  card.style.background = `url(assets/images/${images[index % images.length]}) center/cover`;
 
-  const overlay = document.createElement("div");
-  overlay.className = "overlay";
+  const bg = document.createElement("div");
+  bg.className = "card-bg";
+  bg.style.backgroundImage = `url(assets/images/${images[index % images.length]})`;
 
   const content = document.createElement("div");
   content.className = "card-content";
@@ -82,38 +93,69 @@ function createCard(status, index) {
   copyBtn.onclick = () => copyText(status.text, copyBtn);
 
   const linkBtn = document.createElement("button");
-  linkBtn.textContent = "Link Share";
+  linkBtn.textContent = "Link";
   linkBtn.onclick = () => shareLink(status.id);
 
   const imgBtn = document.createElement("button");
-  imgBtn.textContent = "Share with Img";
+  imgBtn.textContent = "Image";
   imgBtn.onclick = () => shareImage(card);
 
   buttons.append(copyBtn, linkBtn, imgBtn);
-  content.append(text, buttons);
-  card.append(overlay, content);
+
+  content.append(text);
+  card.append(bg, content, buttons);
 
   return card;
 }
 
-/* Copy */
+/* Scroll */
+window.addEventListener("scroll", renderVisible);
+
+/* Search */
+searchInput.addEventListener("input", debounce(e => {
+  const term = e.target.value.trim();
+
+  if (!term) {
+    filteredStatus = [...allStatus];
+  } else {
+    const result = allStatus.filter(s =>
+      s.text.toLowerCase().includes(term.toLowerCase())
+    );
+    filteredStatus = result.length ? result : [...allStatus];
+  }
+
+  createSpacer();
+  renderVisible();
+}, 350));
+
+function highlightText(text) {
+  const term = searchInput.value.trim();
+  if (!term) return text;
+  const regex = new RegExp(`(${term})`, "gi");
+  return text.replace(regex, '<span class="highlight">$1</span>');
+}
+
+/* Utils */
+function debounce(fn, delay) {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), delay);
+  };
+}
+
 function copyText(text, btn) {
   navigator.clipboard.writeText(text);
   btn.textContent = "Copied";
   setTimeout(() => btn.textContent = "Copy", 1500);
 }
 
-/* Share Link */
 function shareLink(id) {
   const url = `${window.location.origin}${window.location.pathname}?id=${id}`;
-  if (navigator.share) {
-    navigator.share({ url });
-  } else {
-    alert(url);
-  }
+  if (navigator.share) navigator.share({ url });
+  else alert(url);
 }
 
-/* Share Image */
 async function shareImage(card) {
   const clone = card.cloneNode(true);
   clone.querySelector(".card-buttons").remove();
@@ -123,68 +165,8 @@ async function shareImage(card) {
 
   canvas.toBlob(async blob => {
     const file = new File([blob], "status.png", { type: "image/png" });
-    if (navigator.share) {
-      await navigator.share({ files: [file] });
-    }
+    if (navigator.share) await navigator.share({ files: [file] });
   });
-}
-
-/* Highlight */
-function highlightText(text) {
-  if (!searchTerm) return text;
-  const regex = new RegExp(`(${searchTerm})`, "gi");
-  return text.replace(regex, '<span class="highlight">$1</span>');
-}
-
-/* Search with Ranking */
-searchInput.addEventListener("input", debounce(e => {
-  searchTerm = e.target.value.trim();
-  if (!searchTerm) {
-    filteredStatus = [...allStatus];
-  } else {
-    filteredStatus = allStatus
-      .map(s => ({
-        ...s,
-        score: (s.text.match(new RegExp(searchTerm, "gi")) || []).length
-      }))
-      .filter(s => s.score > 0)
-      .sort((a,b) => b.score - a.score);
-  }
-
-  container.innerHTML = "";
-  currentIndex = 0;
-  renderBatch();
-}, 350));
-
-function debounce(fn, delay) {
-  let timer;
-  return (...args) => {
-    clearTimeout(timer);
-    timer = setTimeout(() => fn(...args), delay);
-  };
-}
-
-/* Infinite Scroll */
-window.addEventListener("scroll", () => {
-  if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 200) {
-    renderBatch();
-  }
-});
-
-/* Optimize DOM */
-function optimizeDOM() {
-  const maxCards = 20;
-  while (container.children.length > maxCards) {
-    container.removeChild(container.firstChild);
-  }
-}
-
-/* Shuffle */
-function shuffleArray(arr) {
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
 }
 
 init();
