@@ -30,19 +30,23 @@ body {
   position: fixed;
   top: 60px;
   width: 100%;
-  background: rgba(0,0,0,0.3);
-  backdrop-filter: blur(10px);
   padding: 10px 20px;
   z-index: 999;
 }
 
 #searchInput {
   width: 100%;
-  padding: 10px;
-  border-radius: 10px;
+  padding: 12px;
+  border-radius: 25px;
   border: none;
   outline: none;
   font-size: 14px;
+  background: #007bff;
+  color: white;
+}
+
+#searchInput::placeholder {
+  color: rgba(255,255,255,0.8);
 }
 
 /* Container */
@@ -50,10 +54,10 @@ body {
   position: relative;
   max-width: 600px;
   margin: auto;
-  height: 100%;
+  padding: 0 15px; /* left right space */
 }
 
-/* Virtual spacer */
+/* Spacer */
 .spacer {
   width: 100%;
 }
@@ -61,7 +65,8 @@ body {
 /* Glass Card */
 .card {
   position: absolute;
-  width: 100%;
+  width: calc(100% - 30px);
+  left: 15px;
   height: 240px;
   border-radius: 20px;
   overflow: hidden;
@@ -69,11 +74,6 @@ body {
   backdrop-filter: blur(15px);
   background: rgba(255,255,255,0.1);
   box-shadow: 0 8px 25px rgba(0,0,0,0.4);
-  transition: transform 0.2s ease;
-}
-
-.card:hover {
-  transform: scale(1.02);
 }
 
 .card-bg {
@@ -107,7 +107,7 @@ body {
   border-radius: 4px;
 }
 
-/* Buttons bottom-left */
+/* Buttons */
 .card-buttons {
   position: absolute;
   bottom: 10px;
@@ -123,13 +123,9 @@ body {
   border-radius: 8px;
   cursor: pointer;
   font-size: 12px;
-  background: rgba(255,255,255,0.2);
+  background: #007bff;
   color: white;
-  backdrop-filter: blur(5px);
-}
-
-#loading {
-  text-align: center;
-  padding: 20px;
-  color: white;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
