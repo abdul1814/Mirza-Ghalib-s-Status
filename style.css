@@ -13,55 +13,80 @@ body {
   overflow-x: hidden;
 }
 
-/* ===== Search Bar ===== */
-.search-wrapper {
-  position: sticky;
+/* ================= HEADER ================= */
+.header {
+  position: fixed;
   top: 0;
-  padding: 15px;
-  backdrop-filter: blur(10px);
-  background: rgba(0,0,0,0.2);
-  z-index: 100;
+  width: 100%;
+  height: 55px;
+  background: #007bff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 15px;
+  font-weight: bold;
+  z-index: 1000;
+}
+
+.header-left {
+  font-size: 16px;
+}
+
+.header-right {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+/* ================= SEARCH BAR ================= */
+.search-wrapper {
+  position: fixed;
+  top: 55px;
+  width: 100%;
+  padding: 10px 20px; /* left-right gap */
+  z-index: 999;
+  background: rgba(0,0,0,0.15);
+  backdrop-filter: blur(8px);
 }
 
 #searchInput {
   width: 100%;
-  padding: 12px 18px;
-  border-radius: 30px;
+  padding: 10px 16px;
+  border-radius: 25px;
   border: none;
   outline: none;
-  font-size: 15px;
-  background: #5eb3ff;   /* Light Blue */
-  color: white;
+  font-size: 14px;
+  background: #8fd0ff; /* lighter blue */
+  color: #003366;
   transition: 0.3s;
 }
 
 #searchInput::placeholder {
-  color: rgba(255,255,255,0.9);
+  color: rgba(0, 0, 0, 0.6);
 }
 
 #searchInput:focus {
   transform: scale(1.02);
 }
 
-/* ===== Container ===== */
+/* ===== Container spacing (header+search fixed offset) ===== */
 #statusContainer {
-  padding: 15px;
+  padding: 130px 12px 20px 12px;
 }
 
-/* ===== Card Design ===== */
+/* ================= CARD DESIGN ================= */
 .card {
   position: relative;
-  margin: 15px 10px; /* left-right spacing fixed */
-  border-radius: 20px;
+  margin: 12px 6px; /* reduced side spacing */
+  border-radius: 18px;
   overflow: hidden;
   backdrop-filter: blur(15px);
   background: rgba(255,255,255,0.08);
-  box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.35);
   transition: transform 0.3s ease;
 }
 
 .card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-4px);
 }
 
 /* Background Image */
@@ -78,12 +103,12 @@ body {
 .card-content {
   position: relative;
   z-index: 1;
-  padding: 30px 20px;
-  text-align: center;   /* Centered Text */
+  padding: 25px 18px;
+  text-align: center;
 }
 
 .card-text {
-  font-size: 18px;
+  font-size: 17px;
   line-height: 1.6;
 }
 
@@ -95,26 +120,26 @@ body {
   border-radius: 4px;
 }
 
-/* ===== Buttons Section ===== */
+/* ================= BUTTONS ================= */
 .card-buttons {
   position: relative;
   z-index: 1;
   display: flex;
-  justify-content: flex-start; /* left aligned */
-  gap: 10px;
-  padding: 0 15px 15px 15px;  /* bottom spacing */
+  justify-content: flex-start;
+  gap: 6px;
+  padding: 0 10px 12px 10px;
 }
 
 .card-buttons button {
-  flex: 1;
-  padding: 10px;
+  padding: 6px 8px;
   border: none;
-  border-radius: 12px;
-  background: #007bff;  /* Blue background */
+  border-radius: 8px;
+  background: #007bff;
   color: white;
-  font-size: 14px;
+  font-size: 11px; /* smaller text */
   cursor: pointer;
-  transition: 0.3s;
+  transition: 0.2s;
+  white-space: nowrap;
 }
 
 .card-buttons button:hover {
@@ -122,28 +147,23 @@ body {
   transform: translateY(-2px);
 }
 
-/* ===== Loading Text ===== */
+/* ================= LOADING ================= */
 #loading {
   text-align: center;
   padding: 20px;
-  font-size: 16px;
+  font-size: 14px;
   display: none;
   opacity: 0.8;
 }
 
-/* ===== Smooth Scroll Feel ===== */
-html {
-  scroll-behavior: smooth;
-}
-
-/* ===== Responsive ===== */
+/* ================= RESPONSIVE ================= */
 @media (max-width: 480px) {
   .card-text {
-    font-size: 16px;
+    font-size: 15px;
   }
 
   .card-buttons button {
-    font-size: 12px;
-    padding: 8px;
+    font-size: 10px;
+    padding: 5px 6px;
   }
 }
