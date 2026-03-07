@@ -1,0 +1,8 @@
+# Robots.txt for Mirza Ghalib's Status
+
+User-agent: *
+Disallow: /data/
+Disallow: /assets/
+
+# Sitemap location
+Sitemap: https://abdul1814.github.io/Mirza-Ghalib-s-Status/sitemap.xml
