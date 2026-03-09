@@ -169,39 +169,60 @@ body {
   opacity:0.85;
 }
 
-/* DIALOG */
+/* ===== DIALOG UPDATED ===== */
 
 #dialogOverlay{
   position:fixed;
-  bottom:20px;
-  left:50%;
-  transform:translateX(-50%);
-  z-index:9999;
+  inset:0;
+  background:rgba(0,0,0,0.6);
   display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+  animation:fadeIn 0.25s ease;
 }
 
 .dialogBox{
-  background:#ffffff;
+  background:white;
   color:#000;
-  padding:20px 24px;
-  border-radius:14px;
-  box-shadow:0 10px 30px rgba(0,0,0,0.4);
-  max-width:320px;
+  padding:28px 26px;
+  border-radius:16px;
+  box-shadow:0 12px 40px rgba(0,0,0,0.4);
+  max-width:340px;
+  width:90%;
   text-align:center;
+  animation:scaleIn 0.25s ease;
 }
 
 #dialogMessage{
-  margin-bottom:14px;
-  font-size:15px;
+  margin-bottom:18px;
+  font-size:16px;
+  line-height:1.6;
 }
 
 #dialogButton{
   background:#007bff;
   color:white;
   border:none;
-  padding:8px 16px;
+  padding:10px 18px;
   border-radius:8px;
   cursor:pointer;
+  font-size:14px;
+  transition:0.2s;
+}
+
+#dialogButton:hover{
+  background:#0056d2;
+}
+
+@keyframes fadeIn{
+  from{opacity:0}
+  to{opacity:1}
+}
+
+@keyframes scaleIn{
+  from{transform:scale(0.9)}
+  to{transform:scale(1)}
 }
 
 /* RESPONSIVE */
