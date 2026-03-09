@@ -17,7 +17,7 @@ async function init() {
   await loadImages();
   handleSharedLink();
   renderBatch();
-  loadDialog(); // NEW
+  loadDialog();
 }
 
 async function loadAllStatus() {
@@ -65,10 +65,12 @@ window.addEventListener("scroll", () => {
 
 /* Render Batch */
 function renderBatch() {
+
   loading = true;
   loadingDiv.style.display = "block";
 
   setTimeout(() => {
+
     for (let i = 0; i < batchSize; i++) {
       const status = getNextStatus();
       const card = createCard(status);
@@ -76,8 +78,10 @@ function renderBatch() {
     }
 
     limitDOM();
+
     loadingDiv.style.display = "none";
     loading = false;
+
   }, 500);
 }
 
@@ -104,6 +108,7 @@ function getNextStatus() {
 
 /* Create Card */
 function createCard(status) {
+
   const card = document.createElement("div");
   card.className = "card";
 
@@ -143,7 +148,9 @@ function createCard(status) {
 }
 
 /* Search */
+
 searchInput.addEventListener("input", debounce(e => {
+
   const term = e.target.value.trim().toLowerCase();
 
   currentIndex = 0;
@@ -152,6 +159,7 @@ searchInput.addEventListener("input", debounce(e => {
   if (!term) {
     rankedStatus = [];
   } else {
+
     rankedStatus = allStatus
       .map(s => ({
         ...s,
@@ -159,80 +167,118 @@ searchInput.addEventListener("input", debounce(e => {
       }))
       .filter(s => s.score > 0)
       .sort((a,b) => b.score - a.score);
+
   }
 
   renderBatch();
+
 }, 350));
 
 function highlightText(text) {
+
   const term = searchInput.value.trim();
+
   if (!term) return text;
+
   const regex = new RegExp(`(${term})`, "gi");
+
   return text.replace(regex, '<span class="highlight">$1</span>');
 }
 
 /* Utils */
+
 function limitDOM() {
+
   const maxCards = 30;
+
   while (container.children.length > maxCards) {
     container.removeChild(container.firstChild);
   }
+
 }
 
 function debounce(fn, delay) {
+
   let timer;
+
   return (...args) => {
     clearTimeout(timer);
     timer = setTimeout(() => fn(...args), delay);
   };
+
 }
 
 function shuffle(arr) {
+
   for (let i = arr.length - 1; i > 0; i--) {
+
     const j = Math.floor(Math.random() * (i + 1));
+
     [arr[i], arr[j]] = [arr[j], arr[i]];
+
   }
+
 }
 
 function copyText(text, btn) {
+
   navigator.clipboard.writeText(text);
+
   btn.innerHTML = "✅ Copied";
+
   setTimeout(() => btn.innerHTML = "📋 Copy", 1500);
+
 }
 
 function shareLink(id) {
+
   const url = `${window.location.origin}${window.location.pathname}?id=${id}`;
+
   if (navigator.share) navigator.share({ url });
   else alert(url);
+
 }
 
 async function shareImage(card) {
+
   const clone = card.cloneNode(true);
   clone.querySelector(".card-buttons").remove();
+
   document.body.appendChild(clone);
+
   const canvas = await html2canvas(clone);
+
   document.body.removeChild(clone);
 
   canvas.toBlob(async blob => {
+
     const file = new File([blob], "status.png", { type: "image/png" });
+
     if (navigator.share) await navigator.share({ files: [file] });
+
   });
+
 }
 
-/* Dialog System */
+/* ===== DIALOG SYSTEM UPDATED ===== */
 
 async function loadDialog(){
+
   try{
-    const res = await fetch("/ads/dialog.json");
+
+    const res = await fetch("ads/dialog.json");
     const data = await res.json();
 
-    if(!data.enabled) return;
+    if(!data || !data.enabled) return;
 
     setTimeout(()=>{
+
       showDialog(data);
-    }, data.delay * 1000);
+
+    }, (data.delay || 3) * 1000);
 
   }catch(e){}
+
 }
 
 function showDialog(data){
@@ -241,17 +287,27 @@ function showDialog(data){
   const message = document.getElementById("dialogMessage");
   const button = document.getElementById("dialogButton");
 
-  message.innerText = data.message;
-  button.innerText = data.button_text;
+  if(!overlay || !message || !button) return;
 
-  const randomLink = data.links[Math.floor(Math.random()*data.links.length)];
+  message.innerText = data.message || "";
 
-  overlay.style.display = "block";
+  button.innerText = data.button_text || "Open";
+
+  const links = Array.isArray(data.links) ? data.links : [];
+
+  const randomLink = links.length
+    ? links[Math.floor(Math.random()*links.length)]
+    : null;
+
+  overlay.style.display = "flex";
 
   button.onclick = ()=>{
+
     overlay.style.display="none";
-    window.open(randomLink,"_blank");
-  }
+
+    if(randomLink) window.open(randomLink,"_blank");
+
+  };
 
 }
 
