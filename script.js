@@ -263,7 +263,7 @@ async function shareImage(card) {
 
 }
 
-/* ===== DIALOG SYSTEM UPDATED ===== */
+/* ===== UPDATED DIALOG SYSTEM (10 MINUTE LIMIT) ===== */
 
 async function loadDialog(){
 
@@ -273,6 +273,17 @@ async function loadDialog(){
     const data = await res.json();
 
     if(!data || !data.enabled) return;
+
+    /* LOCAL STORAGE CHECK */
+
+    const lastAdTime = localStorage.getItem("lastAdShown");
+    const now = Date.now();
+
+    const tenMinutes = 10 * 60 * 1000;
+
+    if(lastAdTime && (now - lastAdTime) < tenMinutes){
+      return; // 10 minute not passed
+    }
 
     setTimeout(()=>{
 
@@ -304,13 +315,16 @@ function showDialog(data){
 
   overlay.style.display = "flex";
 
-  document.body.style.overflow = "hidden"; // SCROLL OFF
+  document.body.style.overflow = "hidden";
+
+  /* SAVE TIME */
+  localStorage.setItem("lastAdShown", Date.now());
 
   button.onclick = ()=>{
 
     overlay.style.display="none";
 
-    document.body.style.overflow = "auto"; // SCROLL ON
+    document.body.style.overflow = "auto";
 
     if(randomLink) window.open(randomLink,"_blank");
 
