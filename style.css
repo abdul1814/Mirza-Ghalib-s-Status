@@ -174,7 +174,11 @@ body {
 #dialogOverlay{
   position:fixed;
   inset:0;
-  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+
+  /* BACKGROUND BLUR + TRANSPARENT */
+  background:rgba(0,0,0,0.45);
+  backdrop-filter:blur(6px);
+
   display:none;
   align-items:center;
   justify-content:center;
@@ -183,8 +187,8 @@ body {
 }
 
 .dialogBox{
-  background:white;
-  color:#000;
+  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  color:white;
   padding:28px 26px;
   border-radius:16px;
   box-shadow:0 12px 40px rgba(0,0,0,0.4);
