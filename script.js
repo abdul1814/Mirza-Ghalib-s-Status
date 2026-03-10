@@ -15,6 +15,9 @@ let sharedStatus = null;
 async function init() {
   await loadAllStatus();
   await loadImages();
+
+  shuffle(allStatus); // RANDOM STATUS ORDER
+
   handleSharedLink();
   renderBatch();
   loadDialog();
@@ -301,9 +304,13 @@ function showDialog(data){
 
   overlay.style.display = "flex";
 
+  document.body.style.overflow = "hidden"; // SCROLL OFF
+
   button.onclick = ()=>{
 
     overlay.style.display="none";
+
+    document.body.style.overflow = "auto"; // SCROLL ON
 
     if(randomLink) window.open(randomLink,"_blank");
 
