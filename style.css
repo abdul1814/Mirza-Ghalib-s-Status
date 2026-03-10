@@ -169,12 +169,12 @@ body {
   opacity:0.85;
 }
 
-/* ===== DIALOG UPDATED ===== */
+/* ===== UPDATED DIALOG ===== */
 
 #dialogOverlay{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,0.6);
+  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
   display:none;
   align-items:center;
   justify-content:center;
