@@ -6,7 +6,10 @@
 }
 
 body {
-  background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  /* ✅ STATIC BACKGROUND IMAGE */
+  background: url("assets/images/bg.jpg") no-repeat center center fixed;
+  background-size: cover;
+
   min-height: 100vh;
   color: white;
   overflow-x: hidden;
@@ -85,6 +88,10 @@ body {
   border-radius:20px;
   overflow:hidden;
   aspect-ratio:1 / 0.95;
+
+  /* ✅ SAME AS DIALOG GRADIENT */
+  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+
   box-shadow:0 10px 28px rgba(0,0,0,0.4);
   display:flex;
   flex-direction:column;
@@ -97,19 +104,16 @@ body {
   box-shadow:0 14px 36px rgba(0,0,0,0.5);
 }
 
+/* ❌ REMOVE IMAGE BG COMPLETELY */
 .card-bg{
-  position:absolute;
-  inset:0;
-  background-size:cover;
-  background-position:center;
-  z-index:0;
+  display:none;
 }
 
 .card::after{
   content:"";
   position:absolute;
   inset:0;
-  background:rgba(0,0,0,0.45);
+  background:rgba(0,0,0,0.25);
   z-index:1;
 }
 
@@ -169,16 +173,13 @@ body {
   opacity:0.85;
 }
 
-/* ===== UPDATED DIALOG ===== */
+/* DIALOG (UNCHANGED) */
 
 #dialogOverlay{
   position:fixed;
   inset:0;
-
-  /* BACKGROUND BLUR + TRANSPARENT */
   background:rgba(0,0,0,0.45);
   backdrop-filter:blur(6px);
-
   display:none;
   align-items:center;
   justify-content:center;
@@ -232,40 +233,31 @@ body {
 /* RESPONSIVE */
 
 @media(max-width:480px){
-
 .card-text{
   font-size:18px;
 }
-
 .card{
   width:100%;
 }
-
 }
 
 @media(min-width:768px){
-
 #statusContainer{
   padding-top:200px;
 }
-
 }
 
 @media(min-width:1024px){
-
 body{
   display:flex;
   justify-content:center;
 }
-
 #statusContainer{
   width:100%;
   max-width:900px;
   padding-top:200px;
 }
-
 .card{
   max-width:750px;
 }
-
 }
