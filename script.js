@@ -4,7 +4,6 @@ const loadingDiv = document.getElementById("loading");
 
 let allStatus = [];
 let rankedStatus = [];
-let images = [];
 
 let batchSize = 6;
 let currentIndex = 0;
@@ -14,9 +13,8 @@ let sharedStatus = null;
 /* INIT */
 async function init() {
   await loadAllStatus();
-  await loadImages();
 
-  shuffle(allStatus); // RANDOM STATUS ORDER
+  shuffle(allStatus);
 
   handleSharedLink();
   renderBatch();
@@ -36,11 +34,6 @@ async function loadAllStatus() {
   }
 
   allStatus = combined;
-}
-
-async function loadImages() {
-  const res = await fetch("assets/images/images.json");
-  images = await res.json();
 }
 
 /* Shared Link */
@@ -115,11 +108,6 @@ function createCard(status) {
   const card = document.createElement("div");
   card.className = "card";
 
-  const bg = document.createElement("div");
-  bg.className = "card-bg";
-  bg.style.backgroundImage =
-    `url(assets/images/${images[Math.floor(Math.random()*images.length)]})`;
-
   const content = document.createElement("div");
   content.className = "card-content";
 
@@ -145,7 +133,7 @@ function createCard(status) {
   buttons.append(copyBtn, linkBtn, imgBtn);
 
   content.append(text);
-  card.append(bg, content, buttons);
+  card.append(content, buttons);
 
   return card;
 }
@@ -191,55 +179,37 @@ function highlightText(text) {
 /* Utils */
 
 function limitDOM() {
-
   const maxCards = 30;
-
   while (container.children.length > maxCards) {
     container.removeChild(container.firstChild);
   }
-
 }
 
 function debounce(fn, delay) {
-
   let timer;
-
   return (...args) => {
     clearTimeout(timer);
     timer = setTimeout(() => fn(...args), delay);
   };
-
 }
 
 function shuffle(arr) {
-
   for (let i = arr.length - 1; i > 0; i--) {
-
     const j = Math.floor(Math.random() * (i + 1));
-
     [arr[i], arr[j]] = [arr[j], arr[i]];
-
   }
-
 }
 
 function copyText(text, btn) {
-
   navigator.clipboard.writeText(text);
-
   btn.innerHTML = "✅ Copied";
-
   setTimeout(() => btn.innerHTML = "📋 Copy", 1500);
-
 }
 
 function shareLink(id) {
-
   const url = `${window.location.origin}${window.location.pathname}?id=${id}`;
-
   if (navigator.share) navigator.share({ url });
   else alert(url);
-
 }
 
 async function shareImage(card) {
@@ -254,21 +224,16 @@ async function shareImage(card) {
   document.body.removeChild(clone);
 
   canvas.toBlob(async blob => {
-
     const file = new File([blob], "status.png", { type: "image/png" });
-
     if (navigator.share) await navigator.share({ files: [file] });
-
   });
 
 }
 
-/* ===== UPDATED DIALOG SYSTEM (2 MINUTE LIMIT + SAVE ON CLICK) ===== */
+/* DIALOG (UNCHANGED) */
 
 async function loadDialog(){
-
   try{
-
     const res = await fetch("ads/dialog.json");
     const data = await res.json();
 
@@ -284,13 +249,10 @@ async function loadDialog(){
     }
 
     setTimeout(()=>{
-
       showDialog(data);
-
     }, (data.delay || 3) * 1000);
 
   }catch(e){}
-
 }
 
 function showDialog(data){
@@ -302,7 +264,6 @@ function showDialog(data){
   if(!overlay || !message || !button) return;
 
   message.innerText = data.message || "";
-
   button.innerText = data.button_text || "Open";
 
   const links = Array.isArray(data.links) ? data.links : [];
@@ -312,20 +273,13 @@ function showDialog(data){
     : null;
 
   overlay.style.display = "flex";
-
   document.body.style.overflow = "hidden";
 
   button.onclick = ()=>{
-
-    /* SAVE TIME ONLY WHEN CLICK */
     localStorage.setItem("lastAdShown", Date.now());
-
     overlay.style.display="none";
-
     document.body.style.overflow = "auto";
-
     if(randomLink) window.open(randomLink,"_blank");
-
   };
 
 }
